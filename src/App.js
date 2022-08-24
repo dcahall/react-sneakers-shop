@@ -1,6 +1,7 @@
 import Card from './components/Card'
 import Header from './components/Header'
 import Drawer from './components/Drawer'
+import axios from 'axios';
 import React from 'react'
 
 function App() {
@@ -10,30 +11,37 @@ function App() {
     const [searchValue, setSearchValue] = React.useState('');
 
     React.useEffect(() => {
-        fetch('https://63049c5794b8c58fd72110dc.mockapi.io/items')
-            .then(
-                res => res.json()
-            )
-            .then(json => setItems(json));
+		axios
+		.get('https://63049c5794b8c58fd72110dc.mockapi.io/items')
+            .then(res => setItems(res.data))
+        axios
+		.get('https://63049c5794b8c58fd72110dc.mockapi.io/cart')
+		.then(res => setCartItems(res.data));
     }, []);
-
+	
     const onAddToCart = (obj) => {
+		axios.post('https://63049c5794b8c58fd72110dc.mockapi.io/cart', obj);
         setCartItems(prev => [
-            ...prev,
+			...prev,
             obj
         ]);
     }
-
-    const onDeleteFromCart = (obj) => {
-        setCartItems(prev => {
-            const modifiedArr = prev.filter(elem => {
-                if (elem.imageUrl !== obj.imageUrl) 
-                    return elem;
-                return null;
-            });
-            return modifiedArr;
-        })
+	
+    const onRemoveItem = (obj) => {
+		setCartItems((prev) => prev.filter(item => item.id != obj.id))
+		axios.delete(`https://63049c5794b8c58fd72110dc.mockapi.io/cart/${obj.id}`);
     }
+
+    // const onDeleteFromCart = (obj) => {
+    //     setCartItems(prev => {
+    //         const modifiedArr = prev.filter(elem => {
+    //             if (elem.imageUrl !== obj.imageUrl) 
+    //                 return elem;
+    //             return null;
+    //         });
+    //         return modifiedArr;
+    //     })
+    // }
 
     const onChangeSearchInput = (event) => {
         setSearchValue(event.target.value);
@@ -41,7 +49,12 @@ function App() {
 
     return (
         <div className="wrapper clear">
-            {cartOpened && <Drawer items={cartItems} onClose={() => setCartOpened(false)}/>}
+            {
+                cartOpened && <Drawer
+                        items={cartItems}
+                        onClose={() => setCartOpened(false)}
+                        onRemove={onRemoveItem}/>
+            }
             <Header onClickCart={() => setCartOpened(true)}/>
             <div className="content p-40">
                 <div className="d-flex align-center justify-between mb-40">
@@ -78,8 +91,7 @@ function App() {
                                     price={item.price}
                                     imageUrl={item.imageUrl}
                                     onFavorite={() => console.log('Добавили закладки')}
-                                    addItem={(obj) => onAddToCart(obj)}
-                                    deleteItem={(obj) => onDeleteFromCart(obj)}/>
+                                    addItem={(obj) => onAddToCart(obj)}/>
                             ))
                     }
                 </div>
