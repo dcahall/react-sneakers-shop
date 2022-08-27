@@ -1,17 +1,17 @@
 import styles from './card.module.scss'
 import React from 'react'
 
-function Card({onFavorite, title, imageUrl, price, addItem}) {
+function Card({id, onFavorite, title, imageUrl, price, addItem, favorited = false}) {
     const [isAdded, setIsAdded] = React.useState(false);
-	const [isFavorite, setIsFavorite] = React.useState(false);
+	const [isFavorite, setIsFavorite] = React.useState(favorited);
 
     const onClickPlus = () => {
-    	addItem({title, imageUrl, price});
+    	addItem({id, title, imageUrl, price});
         setIsAdded(!isAdded);
     }
 
 	const onClickFavorite = () => {
-		onFavorite({title, imageUrl, price})
+		onFavorite({id, title, imageUrl, price})
 		setIsFavorite(!isFavorite);
 	}
 
