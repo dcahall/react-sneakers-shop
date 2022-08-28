@@ -4,9 +4,11 @@ function Home( {
     searchValue,
     setSearchValue,
     onChangeSearchInput,
-    items,
     onAddToFavorite,
-    onAddToCart
+    onAddToCart,
+    items,
+	favorites,
+	cartItems
 }) {
     return (
         <div className="content p-40">
@@ -41,8 +43,11 @@ function Home( {
                             <Card
                                 key={item.imageUrl}
                                 onFavorite={onAddToFavorite}
-                                addItem={(obj) => onAddToCart(obj)}
-								{...item}/>
+                                addItem={(obj, page) => onAddToCart(obj, page)}
+								{...item}
+								favorited={favorites.some(favObj => favObj.imageUrl === item.imageUrl)}
+								Added={cartItems.some(cartObj => cartObj.imageUrl === item.imageUrl)}
+								/>
                         ))
                 }
             </div>

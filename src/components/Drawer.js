@@ -21,7 +21,7 @@ function Drawer({
                                     {
                                         items.map((obj) => {
                                             return (
-                                                <div className="cartItem d-flex align-center">
+                                                <div key={obj.id} className="cartItem d-flex align-center">
                                                     <div
                                                         style={{
                                                             backgroundImage: `url(${obj.imageUrl})`

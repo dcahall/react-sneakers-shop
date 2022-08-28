@@ -17,9 +17,10 @@ function Favorite( {
                             <Card
                                 key={item.imageUrl}
                                 onFavorite={onAddToFavorite}
-                                addItem={(obj) => onAddToCart(obj)}
+                                addItem={(obj, page) => onAddToCart(obj, page)}
 								favorited={true}
-								{...item}/>
+								{...item}
+								page={'Favorite'}/>
 							))
                 }
             </div>
