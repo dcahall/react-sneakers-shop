@@ -1,25 +1,51 @@
-function Drawer({
-    onClose,
-    onRemove,
-    items = []
-}) {
+import Info from './Info'
+import React from 'react'
+import { AppContext } from '../App';
+import axios from 'axios';
+
+function Drawer({onRemove}) {
+	const [isOrderCompleted, setIsOrderCompleted] = React.useState(false);
+	const {cartItems, setCartOpened, setCartItems} = React.useContext(AppContext);
+	const [isLoading, setIsLoading] = React.useState(false);
+	const [orderId, setOrderId] = React.useState(null);
+
+	const delayMs = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+	const onClickOrder = async () => {
+		try {
+			setIsLoading(true);
+			const {data} = await axios.post("https://63049c5794b8c58fd72110dc.mockapi.io/orders", {items: cartItems});
+			
+			for (let i = 0; i < cartItems.length; i++) {
+				await axios.delete(`https://63049c5794b8c58fd72110dc.mockapi.io/cart/${cartItems[i].id}`);
+				delayMs(1000);				
+			}
+
+			setOrderId(data.id);
+			setIsOrderCompleted(true);
+			setCartItems([]);
+		} catch (error) {
+			alert('Ошибка при создании заказа!'); 
+		}
+		setIsLoading(false);
+	}
+
     return (
         <div className="overlay">
             <div className="drawer">
                 <h2 className="mb-30 d-flex justify-between">Корзина
                     <img
-                        onClick={onClose}
+                        onClick={() => setCartOpened(false)}
                         className="removeBtn cu-p"
                         src="img/btn-remove.svg"
                         alt="Remove"/>
                 </h2>
                 {
-                    items.length > 0
+                    cartItems.length > 0
                         ? (
                             <>
-                                <div className="items">
+                                <div className="items flex">
                                     {
-                                        items.map((obj) => {
+                                        cartItems.map((obj) => {
                                             return (
                                                 <div key={obj.id} className="cartItem d-flex align-center">
                                                     <div
@@ -54,27 +80,18 @@ function Drawer({
                                             <b>1074 руб.</b>
                                         </li>
                                     </ul>
-                                    <button className="greenButton">Оформить заказ<img src="/img/arrow.svg" alt="Arrow"/></button>
+                                    <button disabled={isLoading} onClick={onClickOrder} className="greenButton">Оформить заказ<img src="/img/arrow.svg" alt="Arrow"/></button>
                                 </div>
                             </>
                         )
-                        : (
-                            <div className="cartEmpty d-flex align-center justify-center flex-column flex">
-                                <img
-                                    className="mb-20"
-                                    width="120px"
-                                    height="120px"
-                                    src="/img/empty-cart.jpg"
-                                    alt="Empty cart"/>
-                                <h2>Корзина пустая</h2>
-                                <p className="opacity-6">Добавьте хотя бы одну пару кроссовок, чтобы сделать заказ.</p>
-                                <button className="greenButton" onClick={onClose}>
-                                    <img src="/img/arrow.svg" alt="Arrow"/>Вернуться назад
-                                </button>
-                            </div>
-                        )
-                }
-
+                        : 
+						<Info
+							title={isOrderCompleted ? "Заказ оформлен!" :"Корзина пустая"}
+							description={isOrderCompleted 
+										? `Ваш заказ #${orderId} скоро будет передан курьерской доставке` 
+										: "Добавьте хотя бы одну пару кроссовок, чтобы сделать заказ."}
+							image={isOrderCompleted ? "/img/complete-order.jpg" : "/img/empty-cart.jpg"}/>            
+				}
             </div>
         </div>
     );
