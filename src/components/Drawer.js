@@ -16,7 +16,7 @@ function Drawer({
                 {
                     items.length > 0
                         ? (
-                            <div>
+                            <>
                                 <div className="items">
                                     {
                                         items.map((obj) => {
@@ -56,7 +56,7 @@ function Drawer({
                                     </ul>
                                     <button className="greenButton">Оформить заказ<img src="/img/arrow.svg" alt="Arrow"/></button>
                                 </div>
-                            </div>
+                            </>
                         )
                         : (
                             <div className="cartEmpty d-flex align-center justify-center flex-column flex">

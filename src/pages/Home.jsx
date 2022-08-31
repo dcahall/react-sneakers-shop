@@ -1,15 +1,26 @@
 import Card from '../components/Card';
+import React, { useContext } from 'react';
+import {AppContext} from '../App';
 
-function Home( {
+function Home({
     searchValue,
     setSearchValue,
     onChangeSearchInput,
-    onAddToFavorite,
-    onAddToCart,
-    items,
-	favorites,
-	cartItems
+	isLoading
 }) {
+const {onAddToFavorite, items, favorites} = useContext(AppContext);
+const renderItems = () => {
+	const filtredItems = items.filter(item => item.title.toLowerCase().includes(searchValue.toLowerCase()));
+    return (isLoading ? [...Array(8)] : filtredItems).map((item, index) => (
+            <Card
+                key={index}
+                onFavorite={onAddToFavorite}
+                {...item}
+                loading={isLoading}
+				favorited={favorites.some(favObj => favObj.imageUrl === item.imageUrl)}/>
+        ));
+	}
+
     return (
         <div className="content p-40">
             <div className="d-flex align-center justify-between mb-40">
@@ -34,22 +45,7 @@ function Home( {
                 </div>
             </div>
             <div className="d-flex flex-wrap">
-                {
-                    items
-                        .filter(
-                            item => item.title.toLowerCase().includes(searchValue.toLowerCase())
-                        )
-                        .map(item => (
-                            <Card
-                                key={item.imageUrl}
-                                onFavorite={onAddToFavorite}
-                                addItem={(obj, page) => onAddToCart(obj, page)}
-								{...item}
-								favorited={favorites.some(favObj => favObj.imageUrl === item.imageUrl)}
-								Added={cartItems.some(cartObj => cartObj.imageUrl === item.imageUrl)}
-								/>
-                        ))
-                }
+                {renderItems()}
             </div>
         </div>
     );
