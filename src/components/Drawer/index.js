@@ -1,40 +1,43 @@
-import Info from './Info'
-import React from 'react'
-import { AppContext } from '../App';
+import React from 'react';
 import axios from 'axios';
 
-function Drawer({onRemove}) {
-	const [isOrderCompleted, setIsOrderCompleted] = React.useState(false);
-	const {cartItems, setCartOpened, setCartItems} = React.useContext(AppContext);
-	const [isLoading, setIsLoading] = React.useState(false);
-	const [orderId, setOrderId] = React.useState(null);
+import Info from '../Info';
+import {useCart} from '../../hooks/useCart';
 
-	const delayMs = (ms) => new Promise(resolve => setTimeout(resolve, ms))
-	const onClickOrder = async () => {
-		try {
-			setIsLoading(true);
-			const {data} = await axios.post("https://63049c5794b8c58fd72110dc.mockapi.io/orders", {items: cartItems});
-			
-			for (let i = 0; i < cartItems.length; i++) {
-				await axios.delete(`https://63049c5794b8c58fd72110dc.mockapi.io/cart/${cartItems[i].id}`);
-				delayMs(1000);				
-			}
+import styles from './Drawer.module.scss'
 
-			setOrderId(data.id);
-			setIsOrderCompleted(true);
-			setCartItems([]);
-		} catch (error) {
-			alert('Ошибка при создании заказа!'); 
-		}
-		setIsLoading(false);
-	}
+function Drawer({onRemove, onClose, opened}) {
+    const [isOrderCompleted, setIsOrderCompleted] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [orderId, setOrderId] = React.useState(null);
+    const {cartItems, setCartItems, totalPrice} = useCart();
+
+    const delayMs = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+    const onClickOrder = async () => {
+        try {
+            setIsLoading(true);
+            const {data} = await axios.post("https://63049c5794b8c58fd72110dc.mockapi.io/orders", {items: cartItems});
+            
+            for (let i = 0; i < cartItems.length; i++) {
+                await axios.delete(`https://63049c5794b8c58fd72110dc.mockapi.io/cart/${cartItems[i].id}`);
+                delayMs(1000);				
+            }
+
+            setOrderId(data.id);
+            setIsOrderCompleted(true);
+            setCartItems([]);
+        } catch (error) {
+            alert('Ошибка при создании заказа!'); 
+        }
+        setIsLoading(false);
+    }
 
     return (
-        <div className="overlay">
-            <div className="drawer">
+        <div className={`${styles.overlay} ${opened ? styles.overlayVisible : ""}`}>
+            <div className={styles.drawer}>
                 <h2 className="mb-30 d-flex justify-between">Корзина
                     <img
-                        onClick={() => setCartOpened(false)}
+                        onClick={onClose}
                         className="removeBtn cu-p"
                         src="img/btn-remove.svg"
                         alt="Remove"/>
@@ -70,14 +73,19 @@ function Drawer({onRemove}) {
                                 <div className="cartTotalBlock">
                                     <ul>
                                         <li>
-                                            <span>Итого:</span>
+                                            <span>Cумма:</span>
                                             <div></div>
-                                            <b>21 498 руб.</b>
+                                            <b>{totalPrice} руб.</b>
                                         </li>
                                         <li>
                                             <span>Налог 5%</span>
                                             <div></div>
-                                            <b>1074 руб.</b>
+                                            <b>{Math.round(totalPrice * 0.05)} руб.</b>
+                                        </li>
+                                        <li>
+                                        <span>C учетом налога:</span>
+                                            <div></div>
+                                            <b>{Math.round(totalPrice * 0.05) + totalPrice} руб.</b>
                                         </li>
                                     </ul>
                                     <button disabled={isLoading} onClick={onClickOrder} className="greenButton">Оформить заказ<img src="/img/arrow.svg" alt="Arrow"/></button>
@@ -85,13 +93,13 @@ function Drawer({onRemove}) {
                             </>
                         )
                         : 
-						<Info
-							title={isOrderCompleted ? "Заказ оформлен!" :"Корзина пустая"}
-							description={isOrderCompleted 
-										? `Ваш заказ #${orderId} скоро будет передан курьерской доставке` 
-										: "Добавьте хотя бы одну пару кроссовок, чтобы сделать заказ."}
-							image={isOrderCompleted ? "/img/complete-order.jpg" : "/img/empty-cart.jpg"}/>            
-				}
+                        <Info
+                            title={isOrderCompleted ? "Заказ оформлен!" :"Корзина пустая"}
+                            description={isOrderCompleted 
+                                        ? `Ваш заказ #${orderId} скоро будет передан курьерской доставке` 
+                                        : "Добавьте хотя бы одну пару кроссовок, чтобы сделать заказ."}
+                            image={isOrderCompleted ? "/img/complete-order.jpg" : "/img/empty-cart.jpg"}/>            
+                }
             </div>
         </div>
     );

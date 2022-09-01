@@ -6,20 +6,23 @@ function Home({
     searchValue,
     setSearchValue,
     onChangeSearchInput,
-	isLoading
+    isLoading,
+    onAddToCart,
+    onAddToFavorite
 }) {
-const {onAddToFavorite, items, favorites} = useContext(AppContext);
+const {items} = useContext(AppContext);
+
 const renderItems = () => {
-	const filtredItems = items.filter(item => item.title.toLowerCase().includes(searchValue.toLowerCase()));
+    const filtredItems = items.filter(item => item.title.toLowerCase().includes(searchValue.toLowerCase()));
     return (isLoading ? [...Array(8)] : filtredItems).map((item, index) => (
             <Card
                 key={index}
-                onFavorite={onAddToFavorite}
+                onAddToCart={onAddToCart}
                 {...item}
                 loading={isLoading}
-				favorited={favorites.some(favObj => favObj.imageUrl === item.imageUrl)}/>
+                onAddToFavorite={onAddToFavorite}/>
         ));
-	}
+    }
 
     return (
         <div className="content p-40">
