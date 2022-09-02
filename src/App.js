@@ -64,8 +64,8 @@ function App() {
         try {
             if (favorites.find(favObj => favObj.imageUrl === obj.imageUrl)) {
                 await axios.delete(
-                    `https://63049c5794b8c58fd72110dc.mockapi.io/favorites/
-                ${favorites.filter(favObj => obj.imageUrl === favObj.imageUrl).at(0).id}`
+                    'https://63049c5794b8c58fd72110dc.mockapi.io/favorites/' +
+					favorites.filter(favObj => obj.imageUrl === favObj.imageUrl).at(0).id
                 );
                 setFavorites((prev) => prev.filter(fav => fav.imageUrl !== obj.imageUrl));
             } else {
@@ -73,10 +73,7 @@ function App() {
                     'https://63049c5794b8c58fd72110dc.mockapi.io/favorites',
                     obj
                 );
-                setFavorites(prev => [
-                    ...prev,
-                    resp.data
-                ]);
+                setFavorites(prev => [...prev, resp.data]);
             }
         } catch (error) {
             alert(`Ошибка при добавлении элемента в избранное или при удалении`);
