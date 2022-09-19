@@ -10,7 +10,7 @@ ____
 **Launching:**
 1. Clone this repo and go to it:
 ``` sh
-git clone git@github.com:dcahall/sneakers-shop.git && cd Food-page
+git clone git@github.com:dcahall/sneakers-shop.git && cd sneakers-shop
 ```
 2. Install all npm packages:
 ``` sh
