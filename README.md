@@ -3,7 +3,8 @@ Sneakers-shop, where the following options are available:
 - search by product name
 - add items to cart and favorites
 - order placement
-- switching tabs\n
+- switching tabs
+
 The mockApi was used as a server to store the data
 ____
 **Launching:**
