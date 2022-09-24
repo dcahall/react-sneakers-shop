@@ -18,7 +18,7 @@ function Header(props) {
             <ul className="headerRight d-flex">
                 <li onClick={props.onClickCart} className="mr-30 cu-p">
                     <img width={18} height={18} src="/img/cart.svg" alt="Cart"/>
-                    <span>{totalPrice} руб.
+                    <span>{Math.round(totalPrice * 1.05)} руб.
                     </span>
                 </li>
                 <li className="mr-20 cu-p">
